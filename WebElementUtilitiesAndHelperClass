@@ -487,3 +487,83 @@ public class WebElementAssertionHelper {
 
     // Existing helper methods for asserting CSS properties, visibility, etc.
 }
+=================================================================
+public class WebElementAssertionHelper {
+    private WebElementUtilities utilities;
+
+    public WebElementAssertionHelper(WebDriver driver) {
+        this.utilities = new WebElementUtilities(driver);
+    }
+
+    // Reusing assertCssProperty for individual CSS property checks on table cells
+    public void assertFontColorForTableCell(String elementDescription, WebElement table, int rowIndex, int colIndex, String expectedColor, String... tagName) {
+        WebElement target = utilities.getCellFromTable(table, rowIndex, colIndex, tagName);
+        String actualColor = utilities.getFontColorFromElement(target);
+        assertCssProperty(elementDescription + " - Font color", actualColor, expectedColor);
+    }
+
+    public void assertFontSizeForTableCell(String elementDescription, WebElement table, int rowIndex, int colIndex, String expectedSize, String... tagName) {
+        WebElement target = utilities.getCellFromTable(table, rowIndex, colIndex, tagName);
+        String actualSize = utilities.getFontSizeFromElement(target);
+        assertCssProperty(elementDescription + " - Font size", actualSize, expectedSize);
+    }
+
+    public void assertBackgroundColorForTableCell(String elementDescription, WebElement table, int rowIndex, int colIndex, String expectedColor, String... tagName) {
+        WebElement target = utilities.getCellFromTable(table, rowIndex, colIndex, tagName);
+        String actualColor = utilities.getBackgroundColorFromElement(target);
+        assertCssProperty(elementDescription + " - Background color", actualColor, expectedColor);
+    }
+
+    // Helper method for asserting a CSS property with detailed descriptions
+    private void assertCssProperty(String description, String actualValue, String expectedValue) {
+        Assert.assertEquals(actualValue, expectedValue, String.format("%s does not match. Expected: \"%s\", Actual: \"%s\"", description, expectedValue, actualValue));
+        logMessage(String.format("%s matches as expected. Value: \"%s\"", description, expectedValue));
+    }
+
+    // Log success messages
+    private void logMessage(String message) {
+        System.out.println(message); // Consider using a dedicated logging framework
+    }
+
+    // Additional methods as needed...
+}
+==================================================
+public class WebElementAssertionHelper {
+    private WebElementUtilities utilities;
+
+    public WebElementAssertionHelper(WebDriver driver) {
+        this.utilities = new WebElementUtilities(driver);
+    }
+
+    // Method to assert the font color of a generic web element
+    public void assertFontColor(String elementDescription, WebElement element, String expectedColor) {
+        String actualColor = utilities.getFontColorFromElement(element);
+        assertCssProperty(elementDescription + " - Font color", actualColor, expectedColor);
+    }
+
+    // Method to assert the font size of a generic web element
+    public void assertFontSize(String elementDescription, WebElement element, String expectedSize) {
+        String actualSize = utilities.getFontSizeFromElement(element);
+        assertCssProperty(elementDescription + " - Font size", actualSize, expectedSize);
+    }
+
+    // Method to assert the background color of a generic web element
+    public void assertBackgroundColor(String elementDescription, WebElement element, String expectedColor) {
+        String actualColor = utilities.getBackgroundColorFromElement(element);
+        assertCssProperty(elementDescription + " - Background color", actualColor, expectedColor);
+    }
+
+    // Existing assertCssProperty method...
+    private void assertCssProperty(String description, String actualValue, String expectedValue) {
+        Assert.assertEquals(actualValue, expectedValue, String.format("%s does not match. Expected: \"%s\", Actual: \"%s\"", description, expectedValue, actualValue));
+        logMessage(String.format("%s matches as expected. Value: \"%s\"", description, expectedValue));
+    }
+
+    // Existing logMessage method...
+    private void logMessage(String message) {
+        System.out.println(message); // Consider using a dedicated logging framework
+    }
+
+    // Additional or existing methods...
+}
+
