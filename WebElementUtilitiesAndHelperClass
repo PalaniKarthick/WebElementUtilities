@@ -215,3 +215,66 @@ private static final Logger logger = LoggerFactory.getLogger(WebElementAssertion
 private void logMessage(String message) {
     logger.info(message); // Replace System.out.println with logger call
 }
+=========================================================
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
+
+public class WebElementAssertionHelper {
+    private WebElementUtilities utilities;
+
+    public WebElementAssertionHelper(WebDriver driver) {
+        this.utilities = new WebElementUtilities(driver);
+    }
+
+    // Existing methods...
+
+    // Overloaded method for CSS properties assertion with optional hover and underline check
+    public void assertCssPropertiesWithHover(String elementDescription, WebElement element, 
+                                             String expectedFontStyle, String expectedFontSize, 
+                                             String expectedFontFamily, String expectedFontColor, 
+                                             boolean hover, boolean expectedUnderline) {
+        if (hover) {
+            utilities.hoverOverElement(element);
+        }
+        assertCssProperties(elementDescription, element, expectedFontStyle, expectedFontSize, expectedFontFamily, expectedFontColor);
+        if (hover && expectedUnderline) {
+            String textDecoration = utilities.getTextDecorationForElement(element);
+            Assert.assertTrue(textDecoration.contains("underline"), String.format("%s - Expected the element to be underlined on hover, but it was not. Actual text-decoration: %s", elementDescription, textDecoration));
+            logMessage(String.format("%s - Element is correctly underlined on hover as expected.", elementDescription));
+        }
+    }
+
+    // Combined CSS properties, background color, and hover state assertion with optional underline check
+    public void assertCssPropertiesWithBackgroundAndHover(String elementDescription, WebElement element, 
+                                                          String expectedFontStyle, String expectedFontSize, 
+                                                          String expectedFontFamily, String expectedFontColor, 
+                                                          String expectedBackgroundColor, boolean hover, boolean expectedUnderline) {
+        if (hover) {
+            utilities.hoverOverElement(element);
+        }
+        assertCssProperties(elementDescription, element, expectedFontStyle, expectedFontSize, expectedFontFamily, expectedFontColor, expectedBackgroundColor);
+        if (hover) {
+            // Re-assert background color and font color after hover to check for changes
+            assertCssProperty(elementDescription + " - Background color after hover", utilities.getBackgroundColorFromElement(element), expectedBackgroundColor);
+            assertCssProperty(elementDescription + " - Font color after hover", utilities.getFontColorFromElement(element), expectedFontColor);
+            if (expectedUnderline) {
+                String textDecoration = utilities.getTextDecorationForElement(element);
+                Assert.assertTrue(textDecoration.contains("underline"), String.format("%s - Expected the element to be underlined on hover, but it was not. Actual text-decoration: %s", elementDescription, textDecoration));
+                logMessage(String.format("%s - Element is correctly underlined on hover as expected.", elementDescription));
+            }
+        }
+    }
+
+    // Helper method for asserting CSS properties with detailed descriptions
+    private void assertCssProperty(String description, String actualValue, String expectedValue) {
+        Assert.assertEquals(actualValue, expectedValue, String.format("%s does not match. Expected: \"%s\", Actual: \"%s\"", description, expectedValue, actualValue));
+        logMessage(String.format("%s matches as expected. Value: \"%s\"", description, expectedValue));
+    }
+
+    // Log success messages
+    private void logMessage(String message) {
+        System.out.println(message); // Consider using a dedicated logging framework
+    }
+
+    // Additional methods as needed...
+}
