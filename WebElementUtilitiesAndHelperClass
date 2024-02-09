@@ -566,4 +566,42 @@ public class WebElementAssertionHelper {
 
     // Additional or existing methods...
 }
+============================
+// Inside WebElementUtilities class
+
+// Method to get text from a table cell or a specific element within the cell
+public String getTextFromTableCell(WebElement table, int rowIndex, int colIndex, String... tagName) {
+    WebElement cell = getCellFromTable(table, rowIndex, colIndex, tagName);
+    return cell.getText().trim();
+}
+
+=====================================
+public class WebElementAssertionHelper {
+    private WebElementUtilities utilities;
+
+    public WebElementAssertionHelper(WebDriver driver) {
+        this.utilities = new WebElementUtilities(driver);
+    }
+
+    // Method to assert the text content of a generic web element
+    public void assertTextContent(String elementDescription, WebElement element, String expectedText) {
+        String actualText = element.getText().trim();
+        Assert.assertEquals(actualText, expectedText, String.format("%s - Text content does not match. Expected: \"%s\", Actual: \"%s\"", elementDescription, expectedText, actualText));
+        logMessage(String.format("%s - Text content matches as expected. Text: \"%s\"", elementDescription, expectedText));
+    }
+
+    // Method to assert the text content of a table cell or an element within it
+    public void assertTextContentForTableCell(String elementDescription, WebElement table, int rowIndex, int colIndex, String expectedText, String... tagName) {
+        String actualText = utilities.getTextFromTableCell(table, rowIndex, colIndex, tagName);
+        Assert.assertEquals(actualText, expectedText, String.format("%s - Text content does not match. Expected: \"%s\", Actual: \"%s\"", elementDescription, expectedText, actualText));
+        logMessage(String.format("%s - Text content matches as expected. Text: \"%s\"", elementDescription, expectedText));
+    }
+
+    // Log success messages
+    private void logMessage(String message) {
+        System.out.println(message); // Consider using a dedicated logging framework for real applications
+    }
+
+    // Note: The assertCssProperty method and others remain unchanged
+}
 
