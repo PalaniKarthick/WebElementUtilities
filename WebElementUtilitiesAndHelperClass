@@ -386,3 +386,104 @@ public class WebElementAssertionHelper {
 
     // Additional methods as needed...
 }
+================================================================================================
+public class WebElementAssertionHelper {
+    private WebElementUtilities utilities;
+
+    public WebElementAssertionHelper(WebDriver driver) {
+        this.utilities = new WebElementUtilities(driver);
+    }
+
+    // Example methods for a generic web element
+    public void assertFontColor(String elementDescription, WebElement element, String expectedColor) {
+        String actualColor = utilities.getFontColorFromElement(element);
+        Assert.assertEquals(actualColor, expectedColor, elementDescription + " - Font color does not match.");
+    }
+
+    public void assertFontSize(String elementDescription, WebElement element, String expectedSize) {
+        String actualSize = utilities.getFontSizeFromElement(element);
+        Assert.assertEquals(actualSize, expectedSize, elementDescription + " - Font size does not match.");
+    }
+
+    public void assertBackgroundColor(String elementDescription, WebElement element, String expectedColor) {
+        String actualColor = utilities.getBackgroundColorFromElement(element);
+        Assert.assertEquals(actualColor, expectedColor, elementDescription + " - Background color does not match.");
+    }
+
+    // Example methods for a table cell or an element within it, with optional tagName parameter
+    public void assertFontColorForTableCell(String elementDescription, WebElement table, int rowIndex, int colIndex, String expectedColor, String... tagName) {
+        WebElement cellOrElement = utilities.getCellOrElementWithinTableCell(table, rowIndex, colIndex, tagName);
+        assertFontColor(elementDescription, cellOrElement, expectedColor);
+    }
+
+    public void assertFontSizeForTableCell(String elementDescription, WebElement table, int rowIndex, int colIndex, String expectedSize, String... tagName) {
+        WebElement cellOrElement = utilities.getCellOrElementWithinTableCell(table, rowIndex, colIndex, tagName);
+        assertFontSize(elementDescription, cellOrElement, expectedSize);
+    }
+
+    public void assertBackgroundColorForTableCell(String elementDescription, WebElement table, int rowIndex, int colIndex, String expectedColor, String... tagName) {
+        WebElement cellOrElement = utilities.getCellOrElementWithinTableCell(table, rowIndex, colIndex, tagName);
+        assertBackgroundColor(elementDescription, cellOrElement, expectedColor);
+    }
+
+    // Utility method to get a cell or specific element within a cell, supporting tagName as optional
+    private WebElement getCellOrElementWithinTableCell(WebElement table, int rowIndex, int colIndex, String... tagName) {
+        return tagName.length > 0 ? utilities.getCellFromTable(table, rowIndex, colIndex, tagName[0]) : utilities.getCellFromTable(table, rowIndex, colIndex);
+    }
+
+    // Additional individual property validation methods as needed...
+}
+====================================================
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import java.util.List;
+
+public class WebElementUtilities {
+    private WebDriver driver;
+
+    public WebElementUtilities(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    // Other utility methods...
+
+    // Enhanced getCellFromTable method to optionally return a specific element within the cell
+    public WebElement getCellFromTable(WebElement table, int rowIndex, int colIndex, String... tagName) {
+        List<WebElement> rows = table.findElements(By.tagName("tr"));
+        WebElement cell = rows.get(rowIndex).findElements(By.tagName("td")).get(colIndex);
+        if (tagName.length > 0 && !tagName[0].isEmpty()) {
+            return cell.findElement(By.tagName(tagName[0]));
+        }
+        return cell;
+    }
+}
+
+===================================================================
+
+public class WebElementAssertionHelper {
+    private WebElementUtilities utilities;
+
+    public WebElementAssertionHelper(WebDriver driver) {
+        this.utilities = new WebElementUtilities(driver);
+    }
+
+    // Existing assertion methods...
+
+    // Using getCellFromTable directly for targeted cell or element within cell assertions
+    public void assertFontColorForTableCell(String elementDescription, WebElement table, int rowIndex, int colIndex, String expectedColor, String... tagName) {
+        WebElement target = utilities.getCellFromTable(table, rowIndex, colIndex, tagName);
+        assertFontColor(elementDescription, target, expectedColor);
+    }
+
+    public void assertFontSizeForTableCell(String elementDescription, WebElement table, int rowIndex, int colIndex, String expectedSize, String... tagName) {
+        WebElement target = utilities.getCellFromTable(table, rowIndex, colIndex, tagName);
+        assertFontSize(elementDescription, target, expectedSize);
+    }
+
+    public void assertBackgroundColorForTableCell(String elementDescription, WebElement table, int rowIndex, int colIndex, String expectedColor, String... tagName) {
+        WebElement target = utilities.getCellFromTable(table, rowIndex, colIndex, tagName);
+        assertBackgroundColor(elementDescription, target, expectedColor);
+    }
+
+    // Existing helper methods for asserting CSS properties, visibility, etc.
+}
