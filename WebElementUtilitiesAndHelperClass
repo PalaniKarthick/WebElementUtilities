@@ -278,3 +278,111 @@ public class WebElementAssertionHelper {
 
     // Additional methods as needed...
 }
+=================================================================
+
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
+
+public class WebElementAssertionHelper {
+    private WebElementUtilities utilities;
+
+    public WebElementAssertionHelper(WebDriver driver) {
+        this.utilities = new WebElementUtilities(driver);
+    }
+
+    // Other existing methods...
+
+    // Basic CSS properties assertion for a table cell or an element within it, with tagName optional
+    public void assertCssPropertiesForTableCell(String elementDescription, WebElement table, int rowIndex, int colIndex, 
+                                                String expectedFontStyle, String expectedFontSize, 
+                                                String expectedFontFamily, String expectedFontColor, 
+                                                String... tagName) {
+        WebElement cell = tagName.length > 0 ? utilities.getCellFromTable(table, rowIndex, colIndex, tagName[0]) : utilities.getCellFromTable(table, rowIndex, colIndex);
+        assertCssProperties(elementDescription, cell, expectedFontStyle, expectedFontSize, expectedFontFamily, expectedFontColor);
+    }
+
+    // Overloaded method for asserting CSS properties with background color for a table cell or an element within it
+    public void assertCssPropertiesForTableCellWithBackground(String elementDescription, WebElement table, int rowIndex, int colIndex, 
+                                                              String expectedFontStyle, String expectedFontSize, 
+                                                              String expectedFontFamily, String expectedFontColor, 
+                                                              String expectedBackgroundColor, String... tagName) {
+        WebElement cell = tagName.length > 0 ? utilities.getCellFromTable(table, rowIndex, colIndex, tagName[0]) : utilities.getCellFromTable(table, rowIndex, colIndex);
+        assertCssProperties(elementDescription, cell, expectedFontStyle, expectedFontSize, expectedFontFamily, expectedFontColor, expectedBackgroundColor);
+    }
+
+    // Combined method for asserting CSS properties with background color and hover for a table cell or an element within it
+    public void assertCssPropertiesForTableCellWithBackgroundAndHover(String elementDescription, WebElement table, int rowIndex, int colIndex, 
+                                                                      String expectedFontStyle, String expectedFontSize, 
+                                                                      String expectedFontFamily, String expectedFontColor, 
+                                                                      String expectedBackgroundColor, boolean hover, boolean expectedUnderline, String... tagName) {
+        WebElement targetElement = tagName.length > 0 ? utilities.getCellFromTable(table, rowIndex, colIndex, tagName[0]) : utilities.getCellFromTable(table, rowIndex, colIndex);
+        if (hover) {
+            utilities.hoverOverElement(targetElement);
+        }
+        assertCssProperties(elementDescription, targetElement, expectedFontStyle, expectedFontSize, expectedFontFamily, expectedFontColor, expectedBackgroundColor);
+        if (hover && expectedUnderline) {
+            String textDecoration = utilities.getTextDecorationForElement(targetElement);
+            Assert.assertTrue(textDecoration.contains("underline"), String.format("%s - Expected the element to be underlined on hover, but it was not. Actual text-decoration: %s", elementDescription, textDecoration));
+            logMessage(String.format("%s - Element is correctly underlined on hover as expected.", elementDescription));
+        }
+    }
+
+    // Helper method for asserting CSS properties with detailed descriptions
+    private void assertCssProperty(String description, String actualValue, String expectedValue) {
+        Assert.assertEquals(actualValue, expectedValue, String.format("%s does not match. Expected: \"%s\", Actual: \"%s\"", description, expectedValue, actualValue));
+        logMessage(String.format("%s matches as expected. Value: \"%s\"", description, expectedValue));
+    }
+
+    // Log success messages
+    private void logMessage(String message) {
+        System.out.println(message); // Consider using a dedicated logging framework
+    }
+
+    // Additional methods as needed...
+}
+
+=====================================================================
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
+
+public class WebElementAssertionHelper {
+    private WebElementUtilities utilities;
+
+    public WebElementAssertionHelper(WebDriver driver) {
+        this.utilities = new WebElementUtilities(driver);
+    }
+
+    // Previously defined methods...
+
+    // Method for asserting CSS properties with hover for a table cell or an element within it, underline check optional
+    public void assertCssPropertiesForTableCellWithHover(String elementDescription, WebElement table, int rowIndex, int colIndex, 
+                                                          String expectedFontStyle, String expectedFontSize, 
+                                                          String expectedFontFamily, String expectedFontColor, 
+                                                          boolean hover, boolean expectedUnderline, String... tagName) {
+        WebElement targetElement = tagName.length > 0 ? utilities.getCellFromTable(table, rowIndex, colIndex, tagName[0]) : utilities.getCellFromTable(table, rowIndex, colIndex);
+        if (hover) {
+            utilities.hoverOverElement(targetElement);
+            // Optionally assert the element is underlined on hover
+            if (expectedUnderline) {
+                String textDecoration = utilities.getTextDecorationForElement(targetElement);
+                Assert.assertTrue(textDecoration.contains("underline"), String.format("%s - Expected the element to be underlined on hover, but it was not. Actual text-decoration: %s", elementDescription, textDecoration));
+                logMessage(String.format("%s - Element is correctly underlined on hover as expected.", elementDescription));
+            }
+        }
+        // Assert basic CSS properties without considering hover effect unless specifically checking for underline
+        assertCssProperties(elementDescription, targetElement, expectedFontStyle, expectedFontSize, expectedFontFamily, expectedFontColor);
+    }
+
+    // Helper method for asserting CSS properties with detailed descriptions
+    private void assertCssProperty(String description, String actualValue, String expectedValue) {
+        Assert.assertEquals(actualValue, expectedValue, String.format("%s does not match. Expected: \"%s\", Actual: \"%s\"", description, expectedValue, actualValue));
+        logMessage(String.format("%s matches as expected. Value: \"%s\"", description, expectedValue));
+    }
+
+    // Log success messages
+    private void logMessage(String message) {
+        System.out.println(message); // Consider using a dedicated logging framework
+    }
+
+    // Additional methods as needed...
+}
