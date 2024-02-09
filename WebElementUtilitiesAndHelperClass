@@ -1,0 +1,217 @@
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.WebDriver;
+import java.util.List;
+import org.openqa.selenium.support.Color;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.TimeoutException;
+
+public class WebElementUtilities {
+    private WebDriver driver;
+
+    public WebElementUtilities(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+    }
+
+    public void navigateToUrl(String url) {
+        driver.get(url);
+    }
+
+    public String getTextFromElement(WebElement element) {
+        return element.getText();
+    }
+
+    public String getFontSizeFromElement(WebElement element) {
+        return element.getCssValue("font-size").trim().replace("\"", "");
+    }
+
+    public String getFontFamilyFromElement(WebElement element) {
+        return element.getCssValue("font-family").trim().replace("\"", "");
+    }
+
+    public String getFontStyleFromElement(WebElement element) {
+        return element.getCssValue("font-style").trim();
+    }
+
+    public String getFontColorFromElement(WebElement element) {
+        return Color.fromString(element.getCssValue("color")).asHex();
+    }
+
+    public String getBackgroundColorFromElement(WebElement element) {
+        return Color.fromString(element.getCssValue("background-color")).asHex();
+    }
+
+    public String getTextDecorationForElement(WebElement element) {
+        return element.getCssValue("text-decoration-line");
+    }
+
+    public String getMarginFromElement(WebElement element) {
+        return element.getCssValue("margin").trim().replace("\"", "");
+    }
+
+    public String getTransitionFromElement(WebElement element) {
+        return element.getCssValue("transition").trim().replace("\"", "");
+    }
+
+    public void clickElement(WebElement element) {
+        element.click();
+    }
+
+    public boolean isElementVisible(WebElement element) {
+        return element.isDisplayed();
+    }
+
+    public boolean isElementClickable(WebElement element) {
+        try {
+            new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(element));
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
+    }
+
+    public void hoverOverElement(WebElement element) {
+        new Actions(driver).moveToElement(element).build().perform();
+    }
+
+    public WebElement getCellFromTable(WebElement table, int rowIndex, int columnIndex) {
+        List<WebElement> rows = table.findElements(By.tagName("tr"));
+        WebElement row = rows.get(rowIndex);
+        List<WebElement> cells = row.findElements(By.tagName("td"));
+        return cells.get(columnIndex);
+    }
+
+    // Get a specific element within a table cell by tag name
+    public WebElement getCellFromTable(WebElement table, int rowIndex, int columnIndex, String tagName) {
+        return getCellFromTable(table, rowIndex, columnIndex).findElement(By.tagName(tagName));
+    }
+}
+=======================================================
+
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
+
+public class WebElementAssertionHelper {
+    private WebElementUtilities utilities;
+
+    public WebElementAssertionHelper(WebDriver driver) {
+        this.utilities = new WebElementUtilities(driver);
+    }
+
+    // Assert CSS properties with detailed success messages
+    public void assertCssProperties(String elementDescription, WebElement element, 
+                                    String expectedFontStyle, String expectedFontSize, 
+                                    String expectedFontFamily, String expectedFontColor) {
+        assertCssProperty(elementDescription + " - Font style", utilities.getFontStyleFromElement(element), expectedFontStyle);
+        assertCssProperty(elementDescription + " - Font size", utilities.getFontSizeFromElement(element), expectedFontSize);
+        assertCssProperty(elementDescription + " - Font family", utilities.getFontFamilyFromElement(element), expectedFontFamily);
+        assertCssProperty(elementDescription + " - Font color", utilities.getFontColorFromElement(element), expectedFontColor);
+    }
+
+    // Overloaded method for CSS properties assertion with background color
+    public void assertCssProperties(String elementDescription, WebElement element, 
+                                    String expectedFontStyle, String expectedFontSize, 
+                                    String expectedFontFamily, String expectedFontColor, 
+                                    String expectedBackgroundColor) {
+        assertCssProperties(elementDescription, element, expectedFontStyle, expectedFontSize, expectedFontFamily, expectedFontColor);
+        assertCssProperty(elementDescription + " - Background color", utilities.getBackgroundColorFromElement(element), expectedBackgroundColor);
+    }
+
+    // Combined CSS properties, background color, and hover state assertion
+    public void assertCssPropertiesWithBackgroundAndHover(String elementDescription, WebElement element, 
+                                                          String expectedFontStyle, String expectedFontSize, 
+                                                          String expectedFontFamily, String expectedFontColor, 
+                                                          String expectedBackgroundColor, boolean expectedUnderline) {
+        utilities.hoverOverElement(element);
+        assertCssProperties(elementDescription, element, expectedFontStyle, expectedFontSize, expectedFontFamily, expectedFontColor, expectedBackgroundColor);
+        if (expectedUnderline) {
+            assertTextDecorationOnHover(elementDescription, element);
+        }
+    }
+
+    // Helper method for asserting a CSS property with success message
+    private void assertCssProperty(String description, String actualValue, String expectedValue) {
+        Assert.assertEquals(actualValue, expectedValue, description + " does not match. Expected: " + expectedValue + ", Actual: " + actualValue);
+        logMessage(description + " matches as expected.");
+    }
+
+    // Special method for asserting text decoration on hover with success message
+    private void assertTextDecorationOnHover(String elementDescription, WebElement element) {
+        String textDecoration = utilities.getTextDecorationForElement(element);
+        boolean isUnderlined = textDecoration.contains("underline");
+        Assert.assertTrue(isUnderlined, elementDescription + " - Expected the element to be underlined on hover, but it was not.");
+        logMessage(elementDescription + " - Element is correctly underlined on hover as expected.");
+    }
+
+    // Logging method for successes
+    private void logMessage(String message) {
+        // Log success message
+        System.out.println(message); // Consider using a dedicated logging framework
+    }
+
+    // Additional methods for asserting visibility, clickability, and text content can follow the same pattern
+}
+
+===========================================================
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
+
+public class WebElementAssertionHelper {
+    private WebElementUtilities utilities;
+
+    public WebElementAssertionHelper(WebDriver driver) {
+        this.utilities = new WebElementUtilities(driver);
+    }
+
+    // Previously defined methods...
+
+    // Assert element visibility with success message
+    public void assertElementVisibility(String elementDescription, WebElement element, boolean expectedVisibility) {
+        boolean isVisible = utilities.isElementVisible(element);
+        Assert.assertEquals(isVisible, expectedVisibility, String.format("%s - Expected visibility: %b, but was: %b", elementDescription, expectedVisibility, isVisible));
+        logMessage(String.format("%s - Visibility matches expected: %b", elementDescription, expectedVisibility));
+    }
+
+    // Assert element clickability with success message
+    public void assertElementClickability(String elementDescription, WebElement element, boolean expectedClickability) {
+        boolean isClickable = utilities.isElementClickable(element);
+        Assert.assertEquals(isClickable, expectedClickability, String.format("%s - Expected clickability: %b, but was: %b", elementDescription, expectedClickability, isClickable));
+        logMessage(String.format("%s - Clickability matches expected: %b", elementDescription, expectedClickability));
+    }
+
+    // Assert element text content with success message
+    public void assertElementText(String elementDescription, WebElement element, String expectedText) {
+        String actualText = utilities.getTextFromElement(element);
+        Assert.assertEquals(actualText, expectedText, String.format("%s - Expected text: \"%s\", but was: \"%s\"", elementDescription, expectedText, actualText));
+        logMessage(String.format("%s - Text matches as expected. Text: \"%s\"", elementDescription, expectedText));
+    }
+
+    // Helper method for logging messages
+    private void logMessage(String message) {
+        // This uses System.out.println for simplicity; replace with a logging framework in real applications
+        System.out.println(message);
+    }
+
+    // Additional assertion methods can be implemented here...
+}
+
+
+
+======================================================
+// Example method to assert the value of an element's attribute
+public void assertElementAttribute(String elementDescription, WebElement element, String attributeName, String expectedValue) {
+    String actualValue = element.getAttribute(attributeName);
+    Assert.assertEquals(actualValue, expectedValue, String.format("%s - %s attribute does not match. Expected: \"%s\", Actual: \"%s\"", elementDescription, attributeName, expectedValue, actualValue));
+    logMessage(String.format("%s - %s attribute matches as expected. Value: \"%s\"", elementDescription, attributeName, expectedValue));
+}
+
+// Integration with a logging framework (e.g., SLF4J)
+private static final Logger logger = LoggerFactory.getLogger(WebElementAssertionHelper.class);
+
+private void logMessage(String message) {
+    logger.info(message); // Replace System.out.println with logger call
+}
